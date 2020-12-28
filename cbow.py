@@ -2,6 +2,7 @@ import os
 from gensim.models import Word2Vec
 from collections import defaultdict
 import numpy as np
+from tokenize import morphs
 
 
 def construct_weighted_embedding(embedding_fname, a=0.0001):
@@ -43,13 +44,28 @@ def compute_word_frequency(embedding_corpus_fname):
     return words_count, total_count
 
 
-def train_model(train_data_fname, model_fname):
+def load_tokenized_corpus(train_data_fname):
+    data = []
+    with open(train_data_fname, 'r') as f:
+        for line in f:
+            sentence, tokens, label = line.strip().split("\u241E")
+            data.append([sentence, tokens.split(), label])
+    return data
+
+
+def get_sentence_vector(tokens, dim=100):
+    vector = np.zeros(dim)
+    for token in tokens:
+        if token in embeddings.keys()
+
+
+def train_model(model_fname):
     model = {"vectors": [], "labels": [], "sentences": []}
-    train_data = self.load_or_tokenize_corpus(train_data_fname)
+    train_data = load_tokenized_corpus("./tokenized_data/ratings_train_mecab.txt")
     with open(model_fname, "w") as f:
         for sentence, tokens, label in train_data:
-            tokens = self.tokenizer.morphs(sentence)
-            sentence_vector = self.get_sentence_vector(tokens)
+            tokens = morphs(sentence)
+            sentence_vector = get_sentence_vector(tokens)
             model["sentences"].append(sentence)
             model["vectors"].append(sentence_vector)
             model["labels"].append(label)
@@ -64,4 +80,8 @@ print("loading weighted embeddings, complete!")
 
 # train model
 print("train Continuous Bag of Words model")
-model = train_model()
+full_path = "./cbow/word2vec"
+model_path = '/'.join(full_path.split('/')[:-1])
+if not os.path.exists(model_path):
+    os.makedirs(model_path)
+model = train_model(full_path)

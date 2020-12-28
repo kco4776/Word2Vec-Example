@@ -26,11 +26,15 @@ def morphs(sentence):
     return tokens
 
 
-def tokenize(corpus_fname, output_fname, label=False):
-    if pos:
+def tokenize(corpus_fname, output_fname, with_label=False):
+    with open(corpus_fname, 'r', encoding='utf-8') as f1, open(output_fname, 'w', encoding='utf-8') as f2:
+        if with_label:
+            for line in f1:
+                sentence, label = line.strip().split("\u241E")
+                tokens = morphs(sentence)
+                f2.writelines(sentence + "\u241E" + ' '.join(post_processing(tokens)) + "\u241E" + label + "\n")
 
-    else:
-        with open(corpus_fname, 'r', encoding='utf-8') as f1, open(output_fname, 'w', encoding='utf-8') as f2:
+        else:
             for line in f1:
                 sentence = line.replace('\n', '').strip()
                 tokens = morphs(sentence)
