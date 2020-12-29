@@ -56,7 +56,15 @@ def load_tokenized_corpus(train_data_fname):
 def get_sentence_vector(tokens, dim=100):
     vector = np.zeros(dim)
     for token in tokens:
-        if token in embeddings.keys()
+        if token in embeddings.keys():
+            vector += embeddings[token]
+    vector /= len(tokens)
+    vector_norm = np.linalg.norm(vector)
+    if vector_norm != 0:
+        unit_vector = vector / vector_norm
+    else:
+        unit_vector = np.zeros(dim)
+    return unit_vector
 
 
 def train_model(model_fname):
