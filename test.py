@@ -1,10 +1,11 @@
-import MeCab
+from gensim.models import Word2Vec
 
-tokenizer = MeCab.Tagger()
-a = tokenizer.parseToNode("아버지가 방에 들어가신다")
-tokens = []
-while a:
-    if a.surface is not "":
-        tokens.append(a.surface)
-    a = a.next
-print(tokens)
+
+def load_word_embeddings(vecs_fname):
+    print("loading word embeddings...")
+    print(f"vecs_fname:{vecs_fname}")
+    embedding_model = Word2Vec.load(vecs_fname)
+    print("loading complete!")
+    words = embedding_model.wv.index2word
+    vecs = embedding_model.wv.vectors
+    return words, vecs
