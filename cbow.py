@@ -38,7 +38,7 @@ class CBoWModel(object):
             print("load Continuous Bag of Words model")
             self.model = self.load_model(model_full_fname)
 
-    def evaluate(self, test_data_fname, batch_size=3000, verbose=False):
+    def evaluate(self, test_data_fname, batch_size=3000, verbose=True):
         print("evaluation start!")
         test_data = self.load_or_tokenize_corpus(test_data_fname)
         data_size = len(test_data)
@@ -99,12 +99,12 @@ class CBoWModel(object):
     def load_or_tokenize_corpus(self, fname):
         data = []
         if os.path.exists(fname + "-tokenized"):
-            with open(fname + "-tokenized", "r") as f1:
+            with open(fname + "-tokenized", "r", encoding='utf-8') as f1:
                 for line in f1:
                     sentence, tokens, label = line.strip().split("\u241E")
                     data.append([sentence, tokens.split(), label])
         else:
-            with open(fname, "r") as f2, open(fname + "-tokenized", "w") as f3:
+            with open(fname, "r") as f2, open(fname + "-tokenized", "w", encoding='utf-8') as f3:
                 for line in f2:
                     sentence, label = line.strip().split("\u241E")
                     tokens = morphs(sentence)
@@ -115,7 +115,7 @@ class CBoWModel(object):
     def compute_word_frequency(self, embedding_corpus_fname):
         total_count = 0
         words_count = defaultdict(int)
-        with open(embedding_corpus_fname, "r") as f:
+        with open(embedding_corpus_fname, "r", encoding='utf-8') as f:
             for line in f:
                 tokens = line.strip().split()
                 for token in tokens:
@@ -147,7 +147,7 @@ class CBoWModel(object):
         dictionary = {}
         if os.path.exists(embedding_fname + "-weighted"):
             # load weighted word embeddings
-            with open(embedding_fname + "-weighted", "r") as f2:
+            with open(embedding_fname + "-weighted", "r", encoding='utf-8') as f2:
                 for line in f2:
                     word, weighted_vector = line.strip().split("\u241E")
                     weighted_vector = [float(el) for el in weighted_vector.split()]
@@ -158,7 +158,7 @@ class CBoWModel(object):
             # compute word frequency
             words_count, total_word_count = self.compute_word_frequency(embedding_corpus_fname)
             # construct weighted word embeddings
-            with open(embedding_fname + "-weighted", "w") as f3:
+            with open(embedding_fname + "-weighted", "w", encoding='utf-8') as f3:
                 for word, vec in zip(words, vecs):
                     if word in words_count.keys():
                         word_prob = words_count[word] / total_word_count
@@ -172,7 +172,7 @@ class CBoWModel(object):
     def train_model(self, train_data_fname, model_fname):
         model = {"vectors": [], "labels": [], "sentences": []}
         train_data = self.load_or_tokenize_corpus(train_data_fname)
-        with open(model_fname, "w") as f:
+        with open(model_fname, "w", encoding='utf-8') as f:
             for sentence, tokens, label in train_data:
                 tokens = morphs(sentence)
                 sentence_vector = self.get_sentence_vector(tokens)
@@ -185,7 +185,7 @@ class CBoWModel(object):
 
     def load_model(self, model_fname):
         model = {"vectors": [], "labels": [], "sentences": []}
-        with open(model_fname, "r") as f:
+        with open(model_fname, "r", encoding='utf-8') as f:
             for line in f:
                 sentence, _, vector, label = line.strip().split("\u241E")
                 vector = np.array([float(el) for el in vector.split()])
@@ -224,3 +224,4 @@ if __name__ == '__main__':
                               args.output_path, args.embedding_corpus_path,
                               args.embedding_name, str2bool(args.is_weighted),
                               str2bool(args.average))
+    model.evaluate(args.test_corpus_path)
